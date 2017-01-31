@@ -4,41 +4,51 @@ defmodule UnoTest do
   import Uno.Game
   alias Uno.{Command, Event, GameState, Card}
 
-  def build_test_state(events) do
+  def given(events) do
     Enum.reduce(events, GameState.initial, &evolve/2)
   end
 
-  def test_decide(previous_events, command) do
-    state = build_test_state(previous_events)
-    decide(state, command)
+  def whenn(state, cmd) do
+    decide(state, cmd)
+  end
+
+  def thenn(actual_events, expected_events) do
+    assert actual_events == expected_events
   end
 
   test "game starts" do
     first_card = %Card.Digit{digit: :three, color: :red}
-    command = %Command.StartGame{
-      num_players: 4,
-      first_card: first_card
-    }
-    expected_events = [
-      %Event.GameStarted{
+    given([])
+    |> whenn(
+      %Command.StartGame{
         num_players: 4,
         first_card: first_card,
-      }
-    ]
-    assert test_decide([], command) == {:ok, expected_events}
+      })
+    |> thenn(
+      {:ok, [
+        %Event.GameStarted{
+          num_players: 4,
+          first_card: first_card,
+        },
+      ]})
   end
 
   test "cannot start game twice" do
     first_card = %Card.Digit{digit: :three, color: :red}
-    game_started = %Event.GameStarted{
-      num_players: 4,
-      first_card: first_card,
-    }
-    start_game = %Command.StartGame{
-      num_players: 4,
-      first_card: first_card
-    }
-    assert test_decide([game_started], start_game) == {:error, "Cannot start an already started game."}
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_card: first_card,
+      },
+    ])
+    |> whenn(
+      %Command.StartGame{
+        num_players: 4,
+        first_card: first_card
+      })
+    |> thenn({:error, "Cannot start an already started game."})
+  end
+
   end
 
 end
