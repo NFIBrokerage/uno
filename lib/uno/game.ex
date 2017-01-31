@@ -17,14 +17,16 @@ defmodule Uno.Game do
     {:ok, [
       %Event.GameStarted{
         num_players: cmd.num_players,
-        first_player: 1,
         first_card_in_play: cmd.first_card_in_play,
+      },
+      %Event.TurnStarted{
+        player: 0
       },
     ]}
   end
 
   def decide(%GameState{} = state, %Command.PlayCard{} = cmd) do
-    if cmd.player != state.next_player do
+    if cmd.player != state.current_player do
       {:ok, [
         %Event.CardPlayedOutOfTurn{
           player: cmd.player,
@@ -37,6 +39,9 @@ defmodule Uno.Game do
           %Event.CardPlayed{
             player: cmd.player,
             card: cmd.card,
+          },
+          %Event.TurnStarted{
+            player: next_player(state.current_player, state.num_players),
           },
         ]}
       else
@@ -57,6 +62,8 @@ defmodule Uno.Game do
           player: cmd.player,
           card: cmd.card,
         },
+        # House Rule: when an interrupt is played, the turn moves to the left
+        # of the interrupter. Add a TurnStarted event here.
       ]}
     else
       {:ok, [
@@ -76,18 +83,27 @@ defmodule Uno.Game do
     card_in_play.digit == played_interrupt_card.digit and card_in_play.color == played_interrupt_card.color
   end
 
+  def next_player(current_player, num_players) do
+    (current_player + 1) |> rem(num_players)
+  end
+
   def evolve(%Event.GameStarted{} = event, %GameState{} = state) do
     %{state |
       started?: true,
+      num_players: event.num_players,
       card_in_play: event.first_card_in_play,
-      next_player: event.first_player,
+    }
+  end
+
+  def evolve(%Event.TurnStarted{} = event, %GameState{} = state) do
+    %{state |
+      current_player: event.player,
     }
   end
 
   def evolve(%Event.CardPlayed{} = event, %GameState{} = state) do
     %{state |
       card_in_play: event.card,
-      next_player: event.player + 1
     }
   end
 

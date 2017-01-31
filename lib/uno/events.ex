@@ -4,7 +4,12 @@ defmodule Event.GameStarted do
   defstruct [
     :num_players,
     :first_card_in_play,
-    :first_player, # player_number:
+  ]
+end
+
+defmodule Event.TurnStarted do
+  defstruct [
+    :player,
   ]
 end
 

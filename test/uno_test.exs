@@ -28,8 +28,10 @@ defmodule UnoTest do
       {:ok, [
         %Event.GameStarted{
           num_players: 4,
-          first_player: 1,
           first_card_in_play: first_card_in_play,
+        },
+        %Event.TurnStarted{
+          player: 0,
         },
       ]})
   end
@@ -39,7 +41,6 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 1,
         first_card_in_play: first_card_in_play,
       },
     ])
@@ -55,20 +56,25 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 1,
+        player: 0,
         card: %Card.Digit{digit: :four, color: :red},
       })
     |> thenn(
       {:ok, [
         %Event.CardPlayed{
-          player: 1,
+          player: 0,
           card: %Card.Digit{digit: :four, color: :red},
+        },
+        %Event.TurnStarted{
+          player: 1,
         },
       ]})
   end
@@ -77,20 +83,25 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 1,
+        player: 0,
         card: %Card.Digit{digit: :three, color: :green},
       })
     |> thenn(
       {:ok, [
         %Event.CardPlayed{
-          player: 1,
+          player: 0,
           card: %Card.Digit{digit: :three, color: :green},
+        },
+        %Event.TurnStarted{
+          player: 1,
         },
       ]})
   end
@@ -99,19 +110,21 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 1,
+        player: 0,
         card: %Card.Digit{digit: :four, color: :green},
       })
     |> thenn(
       {:ok, [
         %Event.IllegalCardPlayed{
-          player: 1,
+          player: 0,
           card: %Card.Digit{digit: :four, color: :green},
         },
       ]})
@@ -121,20 +134,25 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 2,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 2,
+        player: 0,
         card: %Card.Digit{digit: :three, color: :green},
       })
     |> thenn(
       {:ok, [
         %Event.CardPlayed{
-          player: 2,
+          player: 0,
           card: %Card.Digit{digit: :three, color: :green},
+        },
+        %Event.TurnStarted{
+          player: 1,
         },
       ]})
   end
@@ -143,8 +161,10 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 2,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
@@ -165,8 +185,10 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 2,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 3,
       },
     ])
     |> whenn(
@@ -187,8 +209,10 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 2,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
@@ -209,8 +233,10 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_player: 2,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
       },
     ])
     |> whenn(
@@ -226,43 +252,53 @@ defmodule UnoTest do
         },
       ]})
   end
-  #
-  # test "player turn wraps around" do
-  #   given([
-  #     %Event.GameStarted{
-  #       num_players: 4,
-  #       first_player: 1,
-  #       first_card_in_play: %Card.Digit{digit: :three, color: :red},
-  #     },
-  #     %Event.CardPlayed{
-  #       player: 1,
-  #       card: %Card.Digit{digit: :three, color: :green},
-  #     },
-  #     %Event.CardPlayed{
-  #       player: 2,
-  #       card: %Card.Digit{digit: :three, color: :green},
-  #     },
-  #     %Event.CardPlayed{
-  #       player: 3,
-  #       card: %Card.Digit{digit: :five, color: :green},
-  #     },
-  #     %Event.CardPlayed{
-  #       player: 4,
-  #       card: %Card.Digit{digit: :seven, color: :green},
-  #     },
-  #   ])
-  #   |> whenn(
-  #     %Command.PlayCard{
-  #       player: 1,
-  #       card: %Card.Digit{digit: :seven, color: :red},
-  #     })
-  #   |> thenn(
-  #     {:ok, [
-  #       %Event.CardPlayed{
-  #         player: 1,
-  #         card: %Card.Digit{digit: :seven, color: :red},
-  #       },
-  #     ]})
-  # end
+
+  test "player turn wraps around" do
+    given([
+      %Event.GameStarted{
+        num_players: 3,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+      %Event.TurnStarted{
+        player: 0,
+      },
+      %Event.CardPlayed{
+        player: 0,
+        card: %Card.Digit{digit: :three, color: :green},
+      },
+      %Event.TurnStarted{
+        player: 1,
+      },
+      %Event.CardPlayed{
+        player: 1,
+        card: %Card.Digit{digit: :three, color: :green},
+      },
+      %Event.TurnStarted{
+        player: 2,
+      },
+      %Event.CardPlayed{
+        player: 2,
+        card: %Card.Digit{digit: :three, color: :green},
+      },
+      %Event.TurnStarted{
+        player: 0,
+      },
+    ])
+    |> whenn(
+      %Command.PlayCard{
+        player: 0,
+        card: %Card.Digit{digit: :seven, color: :green},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.CardPlayed{
+          player: 0,
+          card: %Card.Digit{digit: :seven, color: :green},
+        },
+        %Event.TurnStarted{
+          player: 1,
+        },
+      ]})
+  end
 
 end

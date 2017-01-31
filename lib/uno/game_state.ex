@@ -2,13 +2,15 @@ defmodule Uno.GameState do
   defstruct [
     :started?,
     :card_in_play,
-    :next_player,
+    :current_player,
+    :num_players,
   ]
 
   def initial, do: %Uno.GameState{
     started?: false,
     card_in_play: nil,
-    next_player: nil,
+    current_player: nil,
+    num_players: nil,
   }
 
 end
