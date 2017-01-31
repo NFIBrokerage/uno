@@ -2,7 +2,6 @@ defmodule Uno.Event.GameStarted do
   defstruct [
     :num_players,
     :first_card_in_play,
-    :draw_pile, # [%Card]
     :first_player, # player_number:
   ]
 end

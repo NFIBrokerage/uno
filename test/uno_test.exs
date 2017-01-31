@@ -29,6 +29,7 @@ defmodule UnoTest do
         %Event.GameStarted{
           num_players: 4,
           first_card_in_play: first_card_in_play,
+          first_player: 1,
         },
       ]})
   end
@@ -112,10 +113,28 @@ defmodule UnoTest do
       ]})
   end
 
-  # test "next player can play a card" do
-  #
-  # end
-  #
+  test "next player can play a card" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_player: 2,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayCard{
+        player: 2,
+        card: %Card.Digit{digit: :three, color: :green},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.CardPlayed{
+          player: 2,
+          card: %Card.Digit{digit: :three, color: :green},
+        },
+      ]})
+  end
+
   # test "non-next player cannot play a card" do
   #
   # end

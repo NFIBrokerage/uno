@@ -17,6 +17,7 @@ defmodule Uno.Game do
     {:ok, [
       %Event.GameStarted{
         num_players: cmd.num_players,
+        first_player: 1,
         first_card_in_play: cmd.first_card_in_play,
       },
     ]}
