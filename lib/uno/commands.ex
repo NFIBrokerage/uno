@@ -6,3 +6,10 @@ defmodule Command.StartGame do
     :first_card,
   ]
 end
+
+defmodule Command.PlayCard do
+  defstruct [
+    :player,
+    :card,
+  ]
+end

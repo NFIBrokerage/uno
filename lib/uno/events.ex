@@ -9,7 +9,7 @@ end
 
 defmodule Uno.Event.CardPlayed do
   defstruct [
-    :player_number,
+    :player,
     :card,
   ]
 end
