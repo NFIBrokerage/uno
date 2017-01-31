@@ -33,8 +33,6 @@ defmodule Uno.Mixfile do
   defp deps do
     [
       {:extreme, "~> 0.8.0"},
-      {:excheck, "~> 0.5", only: :test},
-      {:triq, github: "triqng/triq", only: :test},
     ]
   end
 end
