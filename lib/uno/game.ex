@@ -24,7 +24,7 @@ defmodule Uno.Game do
   end
 
   def decide(%GameState{} = state, %Command.PlayCard{} = cmd) do
-    if cmd.player != state.current_player do
+    if cmd.player != state.next_player do
       {:ok, [
         %Event.CardPlayedOutOfTurn{
           player: cmd.player,
@@ -80,13 +80,14 @@ defmodule Uno.Game do
     %{state |
       started?: true,
       card_in_play: event.first_card_in_play,
-      current_player: event.first_player,
+      next_player: event.first_player,
     }
   end
 
   def evolve(%Event.CardPlayed{} = event, %GameState{} = state) do
     %{state |
       card_in_play: event.card,
+      next_player: event.player + 1
     }
   end
 
