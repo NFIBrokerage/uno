@@ -21,6 +21,15 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
+config :uno, :event_store,
+  db_type: :node,
+  host: "localhost",
+  port: 1113,
+  username: "admin",
+  password: "changeit",
+  reconnect_delay: 2_000,
+  max_attempts: :infinity
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
