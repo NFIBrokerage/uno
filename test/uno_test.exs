@@ -90,11 +90,28 @@ defmodule UnoTest do
         },
       ]})
   end
-  #
-  # test "cannot play card that is not the same number or color" do
-  #
-  # end
-  #
+
+  test "cannot play card that is not the same number or color" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_card: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayCard{
+        player: 2,
+        card: %Card.Digit{digit: :four, color: :green},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.IllegalCardPlayed{
+          player: 2,
+          card: %Card.Digit{digit: :four, color: :green},
+        },
+      ]})
+  end
+
   # test "next player can play a card" do
   #
   # end

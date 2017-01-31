@@ -23,12 +23,25 @@ defmodule Uno.Game do
   end
 
   def decide(%GameState{} = state, %Command.PlayCard{} = cmd) do
-    {:ok, [
-      %Event.CardPlayed{
-        player: cmd.player,
-        card: cmd.card,
-      },
-    ]}
+    if legal_play?(state.card_in_play, cmd.card) do
+      {:ok, [
+        %Event.CardPlayed{
+          player: cmd.player,
+          card: cmd.card,
+        },
+      ]}
+    else
+      {:ok, [
+        %Event.IllegalCardPlayed{
+          player: cmd.player,
+          card: cmd.card,
+        },
+      ]}
+    end
+  end
+
+  def legal_play?(card_in_play, played_card) do
+    card_in_play.digit == played_card.digit or card_in_play.color == played_card.color
   end
 
 

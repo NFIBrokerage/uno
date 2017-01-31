@@ -13,3 +13,10 @@ defmodule Uno.Event.CardPlayed do
     :card,
   ]
 end
+
+defmodule Uno.Event.IllegalCardPlayed do
+  defstruct [
+    :player,
+    :card,
+  ]
+end
