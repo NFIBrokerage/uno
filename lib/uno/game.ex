@@ -10,11 +10,11 @@ defmodule Uno.Game do
 
   """
 
-  def decide(%GameState{} = state, %Command.StartGame{} = start_game) do
+  def decide(%GameState{} = state, %Command.StartGame{} = cmd) do
     [
       %Event.GameStarted{
-        num_players: start_game.num_players,
-        first_card: start_game.first_card,
+        num_players: cmd.num_players,
+        first_card: cmd.first_card,
       }
     ]
   end
