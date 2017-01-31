@@ -28,8 +28,8 @@ defmodule UnoTest do
       {:ok, [
         %Event.GameStarted{
           num_players: 4,
-          first_card_in_play: first_card_in_play,
           first_player: 1,
+          first_card_in_play: first_card_in_play,
         },
       ]})
   end
@@ -39,6 +39,7 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
+        first_player: 1,
         first_card_in_play: first_card_in_play,
       },
     ])
@@ -54,6 +55,7 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
+        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
@@ -75,18 +77,19 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
+        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 2,
+        player: 1,
         card: %Card.Digit{digit: :three, color: :green},
       })
     |> thenn(
       {:ok, [
         %Event.CardPlayed{
-          player: 2,
+          player: 1,
           card: %Card.Digit{digit: :three, color: :green},
         },
       ]})
@@ -96,18 +99,19 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
+        first_player: 1,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 2,
+        player: 1,
         card: %Card.Digit{digit: :four, color: :green},
       })
     |> thenn(
       {:ok, [
         %Event.IllegalCardPlayed{
-          player: 2,
+          player: 1,
           card: %Card.Digit{digit: :four, color: :green},
         },
       ]})
