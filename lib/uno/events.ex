@@ -1,4 +1,6 @@
-defmodule Uno.Event.GameStarted do
+alias Uno.Event
+
+defmodule Event.GameStarted do
   defstruct [
     :num_players,
     :first_card_in_play,
@@ -6,35 +8,35 @@ defmodule Uno.Event.GameStarted do
   ]
 end
 
-defmodule Uno.Event.CardPlayed do
+defmodule Event.CardPlayed do
   defstruct [
     :player,
     :card,
   ]
 end
 
-defmodule Uno.Event.CardPlayedOutOfTurn do
+defmodule Event.CardPlayedOutOfTurn do
   defstruct [
     :player,
     :card,
   ]
 end
 
-defmodule Uno.Event.IllegalCardPlayed do
+defmodule Event.IllegalCardPlayed do
   defstruct [
     :player,
     :card,
   ]
 end
 
-defmodule Uno.Event.InterruptCardPlayed do
+defmodule Event.InterruptCardPlayed do
   defstruct [
     :player,
     :card,
   ]
 end
 
-defmodule Uno.Event.IllegalInterruptCardPlayed do
+defmodule Event.IllegalInterruptCardPlayed do
   defstruct [
     :player,
     :card,
