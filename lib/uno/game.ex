@@ -10,19 +10,20 @@ defmodule Uno.Game do
 
   """
 
-  def decide(%Command.StartGame{} = cmd, %GameState{started?: true}) do
-    {:error, "Cannot start an already started game."}
-  end
   def decide(%Command.StartGame{} = cmd, %GameState{} = state) do
-    {:ok, [
-      %Event.GameStarted{
-        num_players: cmd.num_players,
-        first_card_in_play: cmd.first_card_in_play,
-      },
-      %Event.TurnStarted{
-        player: 0
-      },
-    ]}
+    if (state.started?) do
+      {:error, "Cannot start an already started game."}
+    else
+      {:ok, [
+        %Event.GameStarted{
+          num_players: cmd.num_players,
+          first_card_in_play: cmd.first_card_in_play,
+        },
+        %Event.TurnStarted{
+          player: 0
+        },
+      ]}
+    end
   end
 
   def decide(%Command.PlayCard{} = cmd, %GameState{} = state) do
