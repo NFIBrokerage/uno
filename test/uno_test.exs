@@ -61,13 +61,13 @@ defmodule UnoTest do
     ])
     |> whenn(
       %Command.PlayCard{
-        player: 2,
+        player: 1,
         card: %Card.Digit{digit: :four, color: :red},
       })
     |> thenn(
       {:ok, [
         %Event.CardPlayed{
-          player: 2,
+          player: 1,
           card: %Card.Digit{digit: :four, color: :red},
         },
       ]})
@@ -139,7 +139,29 @@ defmodule UnoTest do
       ]})
   end
 
-  test "identical card can be played out of turn" do
+  test "cannot play out of turn" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_player: 2,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayCard{
+        player: 3,
+        card: %Card.Digit{digit: :three, color: :green},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.CardPlayedOutOfTurn{
+          player: 3,
+          card: %Card.Digit{digit: :three, color: :green},
+        },
+      ]})
+  end
+
+  test "identical card can be played out of turn as an interrupt" do
     given([
       %Event.GameStarted{
         num_players: 4,
@@ -161,7 +183,7 @@ defmodule UnoTest do
       ]})
   end
 
-  test "card with different color cannot be played out of turn" do
+  test "card with different color cannot be played as an interrupt" do
     given([
       %Event.GameStarted{
         num_players: 4,
@@ -183,7 +205,7 @@ defmodule UnoTest do
       ]})
   end
 
-  test "card with different digit cannot be played out of turn" do
+  test "card with different digit cannot be played as an interrupt" do
     given([
       %Event.GameStarted{
         num_players: 4,
@@ -204,5 +226,43 @@ defmodule UnoTest do
         },
       ]})
   end
+  #
+  # test "player turn wraps around" do
+  #   given([
+  #     %Event.GameStarted{
+  #       num_players: 4,
+  #       first_player: 1,
+  #       first_card_in_play: %Card.Digit{digit: :three, color: :red},
+  #     },
+  #     %Event.CardPlayed{
+  #       player: 1,
+  #       card: %Card.Digit{digit: :three, color: :green},
+  #     },
+  #     %Event.CardPlayed{
+  #       player: 2,
+  #       card: %Card.Digit{digit: :three, color: :green},
+  #     },
+  #     %Event.CardPlayed{
+  #       player: 3,
+  #       card: %Card.Digit{digit: :five, color: :green},
+  #     },
+  #     %Event.CardPlayed{
+  #       player: 4,
+  #       card: %Card.Digit{digit: :seven, color: :green},
+  #     },
+  #   ])
+  #   |> whenn(
+  #     %Command.PlayCard{
+  #       player: 1,
+  #       card: %Card.Digit{digit: :seven, color: :red},
+  #     })
+  #   |> thenn(
+  #     {:ok, [
+  #       %Event.CardPlayed{
+  #         player: 1,
+  #         card: %Card.Digit{digit: :seven, color: :red},
+  #       },
+  #     ]})
+  # end
 
 end

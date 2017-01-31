@@ -24,20 +24,29 @@ defmodule Uno.Game do
   end
 
   def decide(%GameState{} = state, %Command.PlayCard{} = cmd) do
-    if legal_play?(state.card_in_play, cmd.card) do
+    if cmd.player != state.current_player do
       {:ok, [
-        %Event.CardPlayed{
+        %Event.CardPlayedOutOfTurn{
           player: cmd.player,
           card: cmd.card,
         },
       ]}
     else
-      {:ok, [
-        %Event.IllegalCardPlayed{
-          player: cmd.player,
-          card: cmd.card,
-        },
-      ]}
+      if legal_play?(state.card_in_play, cmd.card) do
+        {:ok, [
+          %Event.CardPlayed{
+            player: cmd.player,
+            card: cmd.card,
+          },
+        ]}
+      else
+        {:ok, [
+          %Event.IllegalCardPlayed{
+            player: cmd.player,
+            card: cmd.card,
+          },
+        ]}
+      end
     end
   end
 
@@ -71,6 +80,13 @@ defmodule Uno.Game do
     %{state |
       started?: true,
       card_in_play: event.first_card_in_play,
+      current_player: event.first_player,
+    }
+  end
+
+  def evolve(%Event.CardPlayed{} = event, %GameState{} = state) do
+    %{state |
+      card_in_play: event.card,
     }
   end
 
