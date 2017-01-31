@@ -17,34 +17,34 @@ defmodule UnoTest do
   end
 
   test "game starts" do
-    first_card = %Card.Digit{digit: :three, color: :red}
+    first_card_in_play = %Card.Digit{digit: :three, color: :red}
     given([])
     |> whenn(
       %Command.StartGame{
         num_players: 4,
-        first_card: first_card,
+        first_card_in_play: first_card_in_play,
       })
     |> thenn(
       {:ok, [
         %Event.GameStarted{
           num_players: 4,
-          first_card: first_card,
+          first_card_in_play: first_card_in_play,
         },
       ]})
   end
 
   test "cannot start game twice" do
-    first_card = %Card.Digit{digit: :three, color: :red}
+    first_card_in_play = %Card.Digit{digit: :three, color: :red}
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_card: first_card,
+        first_card_in_play: first_card_in_play,
       },
     ])
     |> whenn(
       %Command.StartGame{
         num_players: 4,
-        first_card: first_card
+        first_card_in_play: first_card_in_play
       })
     |> thenn({:error, "Cannot start an already started game."})
   end
@@ -53,7 +53,7 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_card: %Card.Digit{digit: :three, color: :red},
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
     |> whenn(
@@ -74,7 +74,7 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_card: %Card.Digit{digit: :three, color: :red},
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
     |> whenn(
@@ -95,7 +95,7 @@ defmodule UnoTest do
     given([
       %Event.GameStarted{
         num_players: 4,
-        first_card: %Card.Digit{digit: :three, color: :red},
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
       },
     ])
     |> whenn(

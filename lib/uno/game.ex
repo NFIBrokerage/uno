@@ -17,7 +17,7 @@ defmodule Uno.Game do
     {:ok, [
       %Event.GameStarted{
         num_players: cmd.num_players,
-        first_card: cmd.first_card,
+        first_card_in_play: cmd.first_card_in_play,
       },
     ]}
   end
@@ -48,7 +48,7 @@ defmodule Uno.Game do
   def evolve(%Event.GameStarted{} = event, %GameState{} = state) do
     %{state |
       started?: true,
-      card_in_play: event.first_card,
+      card_in_play: event.first_card_in_play,
     }
   end
 
