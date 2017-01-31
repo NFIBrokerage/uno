@@ -9,7 +9,7 @@ defmodule UnoTest do
   end
 
   def whenn(state, cmd) do
-    decide(state, cmd)
+    decide(cmd, state)
   end
 
   def thenn(actual_events, expected_events) do
