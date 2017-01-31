@@ -19,3 +19,17 @@ defmodule Uno.Event.IllegalCardPlayed do
     :card,
   ]
 end
+
+defmodule Uno.Event.InterruptCardPlayed do
+  defstruct [
+    :player,
+    :card,
+  ]
+end
+
+defmodule Uno.Event.IllegalInterruptCardPlayed do
+  defstruct [
+    :player,
+    :card,
+  ]
+end

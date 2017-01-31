@@ -139,8 +139,70 @@ defmodule UnoTest do
       ]})
   end
 
-  # test "non-next player cannot play a card" do
-  #
-  # end
+  test "identical card can be played out of turn" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_player: 2,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayInterruptCard{
+        player: 3,
+        card: %Card.Digit{digit: :three, color: :red},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.InterruptCardPlayed{
+          player: 3,
+          card: %Card.Digit{digit: :three, color: :red},
+        },
+      ]})
+  end
+
+  test "card with different color cannot be played out of turn" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_player: 2,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayInterruptCard{
+        player: 3,
+        card: %Card.Digit{digit: :three, color: :green},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.IllegalInterruptCardPlayed{
+          player: 3,
+          card: %Card.Digit{digit: :three, color: :green},
+        },
+      ]})
+  end
+
+  test "card with different digit cannot be played out of turn" do
+    given([
+      %Event.GameStarted{
+        num_players: 4,
+        first_player: 2,
+        first_card_in_play: %Card.Digit{digit: :three, color: :red},
+      },
+    ])
+    |> whenn(
+      %Command.PlayInterruptCard{
+        player: 3,
+        card: %Card.Digit{digit: :four, color: :red},
+      })
+    |> thenn(
+      {:ok, [
+        %Event.IllegalInterruptCardPlayed{
+          player: 3,
+          card: %Card.Digit{digit: :four, color: :red},
+        },
+      ]})
+  end
 
 end

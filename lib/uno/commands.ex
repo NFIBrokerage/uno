@@ -13,3 +13,10 @@ defmodule Command.PlayCard do
     :card,
   ]
 end
+
+defmodule Command.PlayInterruptCard do
+  defstruct [
+    :player,
+    :card,
+  ]
+end
