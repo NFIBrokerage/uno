@@ -25,7 +25,7 @@ defmodule Uno.Game do
   end
 
 
-  def evolve(%GameState{} = state, %Event.GameStarted{} = event) do
+  def evolve(%Event.GameStarted{} = event, %GameState{} = state) do
     %{state | started?: true}
   end
 
