@@ -2,6 +2,7 @@ defmodule Uno.Game.CommandHandlerTest do
   use ExUnit.Case
   import Uno.Game.CommandHandler
   alias Uno.External.Command.Game.{
+    StartGame,
     PlayCard,
   }
   alias Uno.External.Value.Game.{
@@ -18,6 +19,7 @@ defmodule Uno.Game.CommandHandlerTest do
 
   test "command handler fetches and appends events" do
     fetch_events = fn(_stream, starting_version) ->
+      assert starting_version == 0
       {
         [
           %GameStarted{
@@ -87,6 +89,46 @@ defmodule Uno.Game.CommandHandlerTest do
 
     read_events = GenServer.call(reader, :read)
     assert read_events == {events_to_write, num_events - 1}
+  end
+
+  test "fetch events after snapshot version" do
+    # restart CommandHandler worker to reset its state
+    GenServer.stop(Uno.Game.CommandHandler)
+    Process.sleep 10 # wait for worker restart to complete
+
+    first_command = %StartGame{
+      num_players: 4,
+      first_card_in_play: %Card.Digit{digit: :three, color: :red},
+    }
+    first_fetch_events = fn(_stream, starting_version) ->
+      assert starting_version == 0
+      {[], starting_version}
+    end
+    append_events = fn(_stream, events, after_version) ->
+      {:ok, after_version + length(events)}
+    end
+    handle_command(first_command, first_fetch_events, append_events)
+
+    second_command = %PlayCard{
+      player: 0,
+      card: %Card.Digit{digit: :four, color: :red},
+    }
+    second_fetch_events = fn(_stream, starting_version) ->
+      assert starting_version == 2
+      {
+        [
+          %GameStarted{
+            num_players: 4,
+            first_card_in_play: %Card.Digit{digit: :three, color: :red},
+          },
+          %TurnStarted{
+            player: 0,
+          },
+        ],
+        starting_version
+      }
+    end
+    handle_command(second_command, second_fetch_events, append_events)
   end
 
 end

@@ -7,9 +7,8 @@ defmodule Uno.Game.CommandHandler do
 
   @stream "game_b4a59afe-5535-4b92-934b-7624b0751e14"
 
-  def start_link() do
-    Logger.debug("starting CommandHandler for aggregate stream #{@stream}")
-    initial_state = %{game_snapshot: State.initial, game_snapshot_version: 0}
+  def start_link(initial_state \\ %{game_snapshot: State.initial, game_snapshot_version: 0}) do
+    Logger.debug("starting CommandHandler for aggregate stream #{@stream} with state #{inspect initial_state}")
     # TODO load initial game state from event store
     GenServer.start_link(__MODULE__, initial_state, name: __MODULE__)
   end
