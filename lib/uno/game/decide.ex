@@ -1,5 +1,19 @@
-defmodule Uno.Game do
-  alias Uno.{Command, Event, GameState}
+defmodule Uno.Game.Decider do
+  alias Uno.External.Command.Game.{
+    StartGame,
+    PlayCard,
+    PlayInterruptCard,
+  }
+  alias Uno.Game.State
+  alias Uno.External.Event.Game.{
+    GameStarted,
+    TurnStarted,
+    CardPlayed,
+    CardPlayedOutOfTurn,
+    IllegalCardPlayed,
+    InterruptCardPlayed,
+    IllegalInterruptCardPlayed,
+  }
 
   @moduledoc """
 
@@ -10,26 +24,26 @@ defmodule Uno.Game do
 
   """
 
-  def decide(%Command.StartGame{} = cmd, %GameState{} = state) do
+  def decide(%StartGame{} = cmd, %State{} = state) do
     if (state.started?) do
       {:error, "Cannot start an already started game."}
     else
       {:ok, [
-        %Event.GameStarted{
+        %GameStarted{
           num_players: cmd.num_players,
           first_card_in_play: cmd.first_card_in_play,
         },
-        %Event.TurnStarted{
+        %TurnStarted{
           player: 0
         },
       ]}
     end
   end
 
-  def decide(%Command.PlayCard{} = cmd, %GameState{} = state) do
+  def decide(%PlayCard{} = cmd, %State{} = state) do
     if cmd.player != state.current_player do
       {:ok, [
-        %Event.CardPlayedOutOfTurn{
+        %CardPlayedOutOfTurn{
           player: cmd.player,
           card: cmd.card,
         },
@@ -37,17 +51,17 @@ defmodule Uno.Game do
     else
       if legal_play?(state.card_in_play, cmd.card) do
         {:ok, [
-          %Event.CardPlayed{
+          %CardPlayed{
             player: cmd.player,
             card: cmd.card,
           },
-          %Event.TurnStarted{
+          %TurnStarted{
             player: next_player(state.current_player, state.num_players),
           },
         ]}
       else
         {:ok, [
-          %Event.IllegalCardPlayed{
+          %IllegalCardPlayed{
             player: cmd.player,
             card: cmd.card,
           },
@@ -56,10 +70,10 @@ defmodule Uno.Game do
     end
   end
 
-  def decide(%Command.PlayInterruptCard{} = cmd, %GameState{} = state) do
+  def decide(%PlayInterruptCard{} = cmd, %State{} = state) do
     if legal_interrupt_play?(state.card_in_play, cmd.card) do
       {:ok, [
-        %Event.InterruptCardPlayed{
+        %InterruptCardPlayed{
           player: cmd.player,
           card: cmd.card,
         },
@@ -68,7 +82,7 @@ defmodule Uno.Game do
       ]}
     else
       {:ok, [
-        %Event.IllegalInterruptCardPlayed{
+        %IllegalInterruptCardPlayed{
           player: cmd.player,
           card: cmd.card,
         },
@@ -86,26 +100,6 @@ defmodule Uno.Game do
 
   def next_player(current_player, num_players) do
     (current_player + 1) |> rem(num_players)
-  end
-
-  def evolve(%Event.GameStarted{} = event, %GameState{} = state) do
-    %{state |
-      started?: true,
-      num_players: event.num_players,
-      card_in_play: event.first_card_in_play,
-    }
-  end
-
-  def evolve(%Event.TurnStarted{} = event, %GameState{} = state) do
-    %{state |
-      current_player: event.player,
-    }
-  end
-
-  def evolve(%Event.CardPlayed{} = event, %GameState{} = state) do
-    %{state |
-      card_in_play: event.card,
-    }
   end
 
 end

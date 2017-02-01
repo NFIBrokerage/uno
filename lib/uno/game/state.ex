@@ -1,4 +1,4 @@
-defmodule Uno.GameState do
+defmodule Uno.Game.State do
   defstruct [
     :started?,
     :card_in_play,
@@ -6,7 +6,7 @@ defmodule Uno.GameState do
     :num_players,
   ]
 
-  def initial, do: %Uno.GameState{
+  def initial, do: %Uno.Game.State{
     started?: false,
     card_in_play: nil,
     current_player: nil,
