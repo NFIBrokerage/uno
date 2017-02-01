@@ -19,7 +19,7 @@ defmodule Uno.EventStore.StreamSubscriber do
 
       # last_event: last_processed_event,
     }
-    GenServer.cast self, :subscribe
+    # GenServer.cast self, :subscribe
     {:ok, state}
   end
 
