@@ -18,6 +18,7 @@ defmodule Uno.Game.CommandHandler do
     {:ok, new_events} = decide(command, state)
     after_version = 8 # event version to append after
     append_events.(@stream, new_events, after_version)
+    new_events
   end
 
 end
