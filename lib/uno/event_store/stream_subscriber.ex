@@ -17,7 +17,7 @@ defmodule Uno.EventStore.StreamSubscriber do
       read_requester_ref: nil,
       read_events: [],
 
-      # last_event: last_processed_event,
+      last_event_number: last_processed_event,
     }
     # GenServer.cast self, :subscribe
     {:ok, state}
@@ -25,7 +25,11 @@ defmodule Uno.EventStore.StreamSubscriber do
 
   def handle_cast(:subscribe, state) do
     # read only unprocessed events and stay subscribed
-    {:ok, subscription} = Extreme.read_and_stay_subscribed state.event_store, self, state.stream, 0
+    {:ok, subscription} = Extreme.read_and_stay_subscribed(
+      state.event_store,
+      self,
+      state.stream,
+      state.last_event_number)
     # we want to monitor when subscription is crashed so we can resubscribe
     ref = Process.monitor subscription
     {:noreply, %{state | subscription_ref: ref}}
@@ -55,8 +59,7 @@ defmodule Uno.EventStore.StreamSubscriber do
       |> :erlang.binary_to_term
     # |> process_event
 
-    # TODO why is push.link == nil?
-    #event_number = push.link.event_number
+    event_number = push.event.event_number
 
     # :ok = update_last_event state.stream, event_number
     # {:noreply, %{state | last_event: event_number}}
@@ -64,7 +67,7 @@ defmodule Uno.EventStore.StreamSubscriber do
     new_state = %{state |
       # TODO return events in slices rather than collecting all in process state
       read_events: state.read_events ++ [event],
-      #last_read_version: event_number,
+      last_event_number: event_number,
     }
     {:noreply, new_state}
   end

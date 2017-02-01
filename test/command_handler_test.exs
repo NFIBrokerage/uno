@@ -64,15 +64,12 @@ defmodule Uno.Game.CommandHandlerTest do
 
   test "fetch from event store" do
     test_stream = "test_game_#{UUID.uuid1}"
-    events_to_write = [
+    events_to_write = Enum.map(1..100, fn(_) ->
       %GameStarted{
         num_players: 4,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
-      },
-      %TurnStarted{
-        player: 0,
-      },
-    ]
+      }
+    end)
     write_events = EventStore.prepare_write_events(test_stream, events_to_write)
     {:ok, _response} = Extreme.execute @event_store_proc_name, write_events
 
