@@ -1,24 +1,6 @@
 # Uno
 
-**TODO: Add description**
+Event sourced Uno developed during Jérémie Chassaing's Function Event Sourcing
+workshop at DDDEU 2017.
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add `uno` to your list of dependencies in `mix.exs`:
-
-    ```elixir
-    def deps do
-      [{:uno, "~> 0.1.0"}]
-    end
-    ```
-
-  2. Ensure `uno` is started before your application:
-
-    ```elixir
-    def application do
-      [applications: [:uno]]
-    end
-    ```
-
+Jérémie's F# reference is [here](http://thinkbeforecoding.github.io/FsUno.Prod/).
