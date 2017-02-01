@@ -1,12 +1,12 @@
 defmodule Uno.GameTest do
   use ExUnit.Case
-  import Uno.{Game.Decider, Game.Evolver}
+  import Uno.Game.Evolver, only: [build: 1]
+  import Uno.Game.Decider, only: [decide: 2]
   alias Uno.External.Command.Game.{
     StartGame,
     PlayCard,
     PlayInterruptCard,
   }
-  alias Uno.Game.State
   alias Uno.External.Value.Game.{
     Card,
   }
@@ -20,18 +20,9 @@ defmodule Uno.GameTest do
     IllegalInterruptCardPlayed,
   }
 
-
-  def given(events) do
-    Enum.reduce(events, State.initial, &evolve/2)
-  end
-
-  def whenn(state, cmd) do
-    decide(cmd, state)
-  end
-
-  def thenn(actual_events, expected_events) do
-    assert actual_events == expected_events
-  end
+  def given(events), do: build(events)
+  def whenn(state, cmd), do: decide(cmd, state)
+  def thenn(actual_events, expected_events), do: assert actual_events == expected_events
 
   test "game starts" do
     first_card_in_play = %Card.Digit{digit: :three, color: :red}
