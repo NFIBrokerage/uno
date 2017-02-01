@@ -33,7 +33,7 @@ defmodule Uno.Game.CommandHandlerTest do
       card: %Card.Digit{digit: :four, color: :red},
     }
     append_events = fn(stream, events, _after_version) ->
-      assert stream == "game"
+      assert String.starts_with?(stream, "game")
       assert events == [
         %CardPlayed{
           player: 0,

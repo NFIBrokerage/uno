@@ -3,7 +3,7 @@ defmodule Uno.Game.CommandHandler do
   import Uno.Game.Decider, only: [decide: 2]
   alias Uno.Game.State
 
-  @stream "game"
+  @stream "game_b4a59afe-5535-4b92-934b-7624b0751e14"
 
   @doc """
   TODO command contains a game_id used to determine stream
