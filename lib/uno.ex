@@ -1,7 +1,7 @@
 defmodule Uno do
   use Application
 
-  @event_store Uno.EventStore
+  @event_store_proc_name Uno.Extreme.EventStore
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
@@ -14,7 +14,7 @@ defmodule Uno do
     children = [
       # Starts a worker by calling: Uno.Worker.start_link(arg1, arg2, arg3)
       # worker(Uno.Worker, [arg1, arg2, arg3]),
-      worker(Extreme, [event_store_settings, [name: @event_store]]),
+      worker(Extreme, [event_store_settings, [name: @event_store_proc_name]]),
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

@@ -33,6 +33,7 @@ defmodule Uno.Mixfile do
   defp deps do
     [
       {:extreme, "~> 0.8.0"},
+      {:uuid, "~> 1.1"},
     ]
   end
 end
