@@ -64,7 +64,7 @@ defmodule Uno.Game.CommandHandlerTest do
 
   test "fetch from event store" do
     test_stream = "test_game_#{UUID.uuid1}"
-    events = [
+    events_to_write = [
       %GameStarted{
         num_players: 4,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
@@ -73,16 +73,17 @@ defmodule Uno.Game.CommandHandlerTest do
         player: 0,
       },
     ]
-    write_events = EventStore.prepare_write_events(test_stream, events)
+    write_events = EventStore.prepare_write_events(test_stream, events_to_write)
     {:ok, _response} = Extreme.execute @event_store_proc_name, write_events
 
-    {:ok, _sub} = Uno.EventStore.StreamSubscriber.start_link(
+    {:ok, reader} = Uno.EventStore.StreamSubscriber.start_link(
       @event_store_proc_name,
       test_stream,
       0
     )
 
-    Process.sleep(1000)
+    read_events = GenServer.call(reader, :read)
+    assert read_events == events_to_write
   end
 
 end
