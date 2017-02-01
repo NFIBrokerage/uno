@@ -14,6 +14,7 @@ defmodule Uno do
     children = [
       # Starts a worker by calling: Uno.Worker.start_link(arg1, arg2, arg3)
       # worker(Uno.Worker, [arg1, arg2, arg3]),
+      worker(Uno.Game.CommandHandler, []),
       worker(Extreme, [event_store_settings, [name: @event_store_proc_name]]),
     ]
 
@@ -40,7 +41,8 @@ defmodule Uno do
 
   defp append_events_to_event_store(stream, events, after_version) do
     write_events = Uno.EventStore.prepare_write_events(stream, events)
-    {:ok, _response} = Extreme.execute(@event_store_proc_name, write_events)
+    {:ok, response} = Extreme.execute(@event_store_proc_name, write_events)
+    {:ok, response.last_event_number}
   end
 
 end

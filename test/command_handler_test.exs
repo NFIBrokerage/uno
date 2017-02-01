@@ -17,22 +17,25 @@ defmodule Uno.Game.CommandHandlerTest do
   @event_store_proc_name Uno.Extreme.EventStore
 
   test "command handler fetches and appends events" do
-    fetch_events = fn(_stream, _starting_version) ->
-      [
-        %GameStarted{
-          num_players: 4,
-          first_card_in_play: %Card.Digit{digit: :three, color: :red},
-        },
-        %TurnStarted{
-          player: 0,
-        },
-      ]
+    fetch_events = fn(_stream, starting_version) ->
+      {
+        [
+          %GameStarted{
+            num_players: 4,
+            first_card_in_play: %Card.Digit{digit: :three, color: :red},
+          },
+          %TurnStarted{
+            player: 0,
+          },
+        ],
+        starting_version + 2
+      }
     end
     command = %PlayCard{
       player: 0,
       card: %Card.Digit{digit: :four, color: :red},
     }
-    append_events = fn(stream, events, _after_version) ->
+    append_events = fn(stream, events, after_version) ->
       assert String.starts_with?(stream, "game")
       assert events == [
         %CardPlayed{
@@ -43,6 +46,7 @@ defmodule Uno.Game.CommandHandlerTest do
           player: 1,
         },
       ]
+      {:ok, after_version + length(events)}
     end
     handle_command(command, fetch_events, append_events)
   end
@@ -64,14 +68,16 @@ defmodule Uno.Game.CommandHandlerTest do
 
   test "fetch from event store" do
     test_stream = "test_game_#{UUID.uuid1}"
-    events_to_write = Enum.map(1..100, fn(_) ->
+    num_events = 100
+    events_to_write = Enum.map(1..num_events, fn(_) ->
       %GameStarted{
         num_players: 4,
         first_card_in_play: %Card.Digit{digit: :three, color: :red},
       }
     end)
     write_events = EventStore.prepare_write_events(test_stream, events_to_write)
-    {:ok, _response} = Extreme.execute @event_store_proc_name, write_events
+    {:ok, response} = Extreme.execute @event_store_proc_name, write_events
+    assert response.last_event_number == num_events - 1
 
     {:ok, reader} = Uno.EventStore.StreamSubscriber.start_link(
       @event_store_proc_name,
@@ -80,7 +86,7 @@ defmodule Uno.Game.CommandHandlerTest do
     )
 
     read_events = GenServer.call(reader, :read)
-    assert read_events == events_to_write
+    assert read_events == {events_to_write, num_events - 1}
   end
 
 end

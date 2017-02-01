@@ -18,5 +18,5 @@ defmodule Uno.EventStore do
       require_master: false
     )
   end
-  
+
 end

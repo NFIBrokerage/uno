@@ -36,7 +36,11 @@ defmodule Uno.EventStore.StreamSubscriber do
   end
 
   def handle_call(:read, read_requester_ref, state) do
-    {:ok, reader} = Extreme.read_and_stay_subscribed state.event_store, self, state.stream, 0
+    {:ok, reader} = Extreme.read_and_stay_subscribed(
+      state.event_store,
+      self,
+      state.stream,
+      state.last_event_number)
     ref = Process.monitor reader
     new_state = %{state |
       reading?: true,
@@ -59,15 +63,13 @@ defmodule Uno.EventStore.StreamSubscriber do
       |> :erlang.binary_to_term
     # |> process_event
 
-    event_number = push.event.event_number
-
     # :ok = update_last_event state.stream, event_number
     # {:noreply, %{state | last_event: event_number}}
 
     new_state = %{state |
       # TODO return events in slices rather than collecting all in process state
       read_events: state.read_events ++ [event],
-      last_event_number: event_number,
+      last_event_number: push.event.event_number,
     }
     {:noreply, new_state}
   end
@@ -75,7 +77,7 @@ defmodule Uno.EventStore.StreamSubscriber do
   def handle_info(:caught_up, state) do
     Logger.debug "We are up to date!"
     if state.reading? do
-      GenServer.reply(state.read_requester_ref, state.read_events)
+      GenServer.reply(state.read_requester_ref, {state.read_events, state.last_event_number})
       new_state = %{state |
         reading?: false,
         reader_ref: nil,

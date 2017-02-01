@@ -1,6 +1,6 @@
 defmodule Uno.GameTest do
   use ExUnit.Case
-  import Uno.Game.Evolver, only: [build: 1]
+  import Uno.Game.CommandHandler, only: [build: 1]
   import Uno.Game.Decider, only: [decide: 2]
   alias Uno.External.Command.Game.{
     StartGame,

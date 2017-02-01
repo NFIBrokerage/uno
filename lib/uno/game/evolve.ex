@@ -6,10 +6,6 @@ defmodule Uno.Game.Evolver do
   }
   alias Uno.Game.State
 
-  def build(events) do
-    Enum.reduce(events, State.initial, &evolve/2)
-  end
-
   def evolve(%GameStarted{} = event, %State{} = state) do
     %{state |
       started?: true,
